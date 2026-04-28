@@ -22,3 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Hardhat and environment
+.env
+artifacts/
+cache/
+typechain-types/
+ignition/deployments/

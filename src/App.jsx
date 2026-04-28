@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import {
   checkConnection, setRate, sendMessage, readMessage,
-  getMessage, listInbox, getRate, getEarnings
-} from "../lib/stellar.js";
+  getMessage, listInbox, getRate, getEarnings, connectWallet
+} from "../lib/ethers.js";
 
 const toOutput = (value) => {
   if (typeof value === "string") return value;
@@ -55,7 +55,7 @@ export default function App() {
 
   const onConnect = () =>
     runAction("connect", async () => {
-      const user = await checkConnection();
+      const user = await connectWallet();
       if (user) {
         const addr = user.publicKey;
         setWalletAddr(addr);
@@ -73,10 +73,10 @@ export default function App() {
   const tabs = ["Set rate", "Send message", "Inbox"];
 
   const faqs = [
-    ["Do I need XLM to use this?", "Yes — small amounts of XLM cover Stellar network fees. Payments between users are tracked in i128 units inside the smart contract."],
-    ["What wallet do I need?", "Install the Freighter browser extension, create or import a Stellar account, and switch to Testnet mode before connecting."],
+    ["Do I need NERO to use this?", "Yes — small amounts of NERO cover Nero Chain network fees. Payments between users are tracked in wei inside the smart contract."],
+    ["What wallet do I need?", "Install the MetaMask browser extension, create or import an Ethereum account, and switch to the Nero Testnet before connecting."],
     ["What if I set my rate to zero?", "Anyone can message you for free. Zero is the default — call Set Rate to require payment from senders."],
-    ["Are messages stored on-chain?", "Yes. Content, sender, recipient, payment, read status, and timestamp are all in Soroban contract instance storage on Stellar testnet."],
+    ["Are messages stored on-chain?", "Yes. Content, sender, recipient, payment, read status, and timestamp are all in the Solidity contract storage on Nero Chain."],
   ];
 
   if (view === "landing") {
@@ -100,7 +100,7 @@ export default function App() {
           <div style={s.heroInner}>
             <div style={s.heroBadge}>
               <span style={s.heroBadgeDot} />
-              Live on Stellar Testnet
+              Live on Nero Testnet
             </div>
             <h1 style={s.h1}>
               Monetize your inbox.<br />
@@ -108,7 +108,7 @@ export default function App() {
             </h1>
             <p style={s.heroSub}>
               Set a price to receive messages. Senders pay, you earn.
-              Built on Stellar Soroban smart contracts — fully non-custodial.
+              Built on EVM Solidity smart contracts — fully non-custodial.
             </p>
             <div style={s.heroActions}>
               <button style={s.btnPrimary} onClick={() => setView("app")}>Launch app</button>
@@ -120,7 +120,7 @@ export default function App() {
               <div style={s.msgMeta}>
                 <div style={s.msgAvatar}>SR</div>
                 <div>
-                  <div style={s.msgSender}>GSEND...1234</div>
+                  <div style={s.msgSender}>0xABC...1234</div>
                   <div style={s.msgTime}>just now</div>
                 </div>
                 <div style={s.msgBadge}>+100</div>
@@ -131,7 +131,7 @@ export default function App() {
               <div style={s.msgMeta}>
                 <div style={{ ...s.msgAvatar, background: "#e0f2fe", color: "#0369a1" }}>AM</div>
                 <div>
-                  <div style={s.msgSender}>GALPH...5678</div>
+                  <div style={s.msgSender}>0xDEF...5678</div>
                   <div style={s.msgTime}>2 min ago</div>
                 </div>
                 <div style={{ ...s.msgBadge, background: "#fef9c3", color: "#854d0e" }}>+250</div>
@@ -149,7 +149,7 @@ export default function App() {
         <div style={s.stats}>
           {[
             ["0.01s", "Avg settlement"],
-            ["i128", "Payment precision"],
+            ["wei", "Payment precision"],
             ["100%", "Non-custodial"],
           ].map(([num, label]) => (
             <div key={label} style={s.statCard}>
@@ -197,12 +197,12 @@ export default function App() {
         <footer style={s.footer}>
           <div>
             <div style={s.footerBrand}>Pay-to-Message</div>
-            <div style={s.footerSub}>Stellar Soroban · Project 34</div>
+            <div style={s.footerSub}>Nero Chain · Project 34</div>
           </div>
           <div style={s.footerLinks}>
-            <a href="https://stellar.org/developers" style={s.footerLink} target="_blank" rel="noreferrer">Stellar docs</a>
-            <a href="https://developers.stellar.org/docs/smart-contracts" style={s.footerLink} target="_blank" rel="noreferrer">Soroban</a>
-            <a href="https://freighter.app" style={s.footerLink} target="_blank" rel="noreferrer">Freighter</a>
+            <a href="https://nerochain.io" style={s.footerLink} target="_blank" rel="noreferrer">Nero docs</a>
+            <a href="https://soliditylang.org" style={s.footerLink} target="_blank" rel="noreferrer">Solidity</a>
+            <a href="https://metamask.io" style={s.footerLink} target="_blank" rel="noreferrer">MetaMask</a>
           </div>
         </footer>
       </div>
@@ -255,9 +255,9 @@ export default function App() {
             <div style={s.cardBody}>
               <div style={s.fieldRow}>
                 <Field label="Recipient address" hint="Wallet receiving paid messages">
-                  <input style={s.input} name="recipient" value={form.recipient} onChange={setField} placeholder="G..." />
+                  <input style={s.input} name="recipient" value={form.recipient} onChange={setField} placeholder="0x..." />
                 </Field>
-                <Field label="Rate per message" hint="Minimum payment (i128)">
+                <Field label="Rate per message" hint="Minimum payment (wei)">
                   <input style={s.input} name="rate" type="number" value={form.rate} onChange={setField} />
                 </Field>
               </div>
@@ -288,10 +288,10 @@ export default function App() {
               </div>
               <div style={s.fieldRow}>
                 <Field label="Sender" hint="Auto-filled from wallet">
-                  <input style={s.input} name="sender" value={form.sender} onChange={setField} placeholder="G..." />
+                  <input style={s.input} name="sender" value={form.sender} onChange={setField} placeholder="0x..." />
                 </Field>
                 <Field label="Recipient">
-                  <input style={s.input} name="recipient" value={form.recipient} onChange={setField} placeholder="G..." />
+                  <input style={s.input} name="recipient" value={form.recipient} onChange={setField} placeholder="0x..." />
                 </Field>
               </div>
               <div style={s.composer}>
@@ -331,7 +331,7 @@ export default function App() {
                   <input style={s.input} name="id" value={form.id} onChange={setField} />
                 </Field>
                 <Field label="Recipient address">
-                  <input style={s.input} name="recipient" value={form.recipient} onChange={setField} placeholder="G..." />
+                  <input style={s.input} name="recipient" value={form.recipient} onChange={setField} placeholder="0x..." />
                 </Field>
               </div>
               <div style={s.btnRow}>
