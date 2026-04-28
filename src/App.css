@@ -1,0 +1,54 @@
+/* App.css — Pay-to-Message */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  min-height: 100vh;
+  background: #f9fafb;
+  color: #111;
+  font-family: 'DM Sans', 'Segoe UI', -apple-system, sans-serif;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Focus ring */
+input:focus, textarea:focus, button:focus-visible {
+  outline: 2px solid #22c55e;
+  outline-offset: 2px;
+}
+
+/* Responsive: collapse two-column layouts on small screens */
+@media (max-width: 680px) {
+  /* Hero grid */
+  [style*="gridTemplateColumns: 1fr 1fr"] {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  /* Stats and steps */
+  [style*="repeat(3,1fr)"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Field rows */
+  [style*="gridTemplateColumns: 1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Nav links on small screens */
+  nav [style*="gap: 20"] {
+    gap: 10px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  [style*="fontSize: 42"] { font-size: 28px !important; }
+}
+
+/* Smooth transitions for interactive elements */
+button { transition: opacity 0.15s, background 0.15s, transform 0.1s; }
+button:active { transform: scale(0.97); }
+
+/* Scrollbar styling */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
